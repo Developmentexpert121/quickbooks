@@ -1,0 +1,31 @@
+{
+  "name": "quickbook",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Intuit",
+    "QuickBooks",
+    "Intuit Developer"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.20.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "ejs": "^3.1.8",
+    "express": "^4.18.1",
+    "express-session": "^1.17.3",
+    "intuit-oauth": "^4.0.0",
+    "node-localstorage": "^2.2.1",
+    "node-quickbooks": "^2.0.39",
+    "nodemon": "^2.0.16",
+    "querystring": "^0.2.1",
+    "request": "^2.88.2",
+    "util": "^0.12.4"
+  }
+}
