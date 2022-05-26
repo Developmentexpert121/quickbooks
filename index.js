@@ -16,7 +16,7 @@ const billRouter = require('./routes/bill.route');
 const vendorRouter = require('./routes/vendor.route');
 const customerRouter = require('./routes/customer.route');
 
-app.set('port', port);
+app.set('port', port)
 app.set('views', 'views');
 app.use(cors());
 app.use(bodyParser.json());
@@ -59,7 +59,7 @@ app.get('/getToken', function(req, res) {
             console.log('The Token is  ' + authResponse.getToken().access_token);
             token = authResponse.getToken();
             localStorage.setItem('oauthToken', JSON.stringify(token));
-            res.send({statusCode:200, status: 'success', data:authResponse.getToken()});
+            res.send({statusCode:200, status: 'success', data:authResponse});
         })
         .catch(function (e) {
             console.error('The error message is :' + e);

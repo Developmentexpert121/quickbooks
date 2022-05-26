@@ -35,15 +35,14 @@ var oauthClient = new OAuthClient({
         body: JSON.stringify(req.body)
     })
     .then(function (authResponse) {
+        console.log(authResponse);
         console.log(`The response for API call is :${JSON.stringify(authResponse)}`);
-        res.send(JSON.parse(authResponse.text()));
+        res.send({status: 200, data :JSON.parse(authResponse.text())});
     })
     .catch(function (e) {
         console.error(e);
         res.status(e.authResponse.response.status).json(e.authResponse.response.body)
     });
-    }else{
-      res.send({status: 401, message: 'please login'});
     }
 })
 
@@ -53,6 +52,7 @@ billRoute.get('/getBillByQuery', (req, res) => {
     let isValid= checkToken()
     if(isValid){
         const realmId = oauthClient.getToken().realmId;
+        console.log(realmId);
         const url =
         oauthClient.environment == 'sandbox'
             ? OAuthClient.environment.sandbox
@@ -63,14 +63,14 @@ billRoute.get('/getBillByQuery', (req, res) => {
         })
       .then(function (authResponse) {
         console.log(`The response for API call is :${JSON.stringify(authResponse)}`);
-        res.send(JSON.parse(authResponse.text()));
+        res.send({data : JSON.parse(authResponse.text())});
       })
       .catch(function (e) {
         console.error(e);
         res.status(e.authResponse.response.status).json(e.authResponse.response.body)
       });
     }else{
-      res.send({status: 401, message: 'please login'});
+        res.send('please login again');
     }
 })
 
@@ -80,6 +80,7 @@ billRoute.get('/getBillById/:id', (req, res) => {
     let isValid= checkToken()
     if(isValid){
         const realmId = oauthClient.getToken().realmId;
+        console.log(realmId);
         const url =
         oauthClient.environment == 'sandbox'
             ? OAuthClient.environment.sandbox
@@ -89,15 +90,16 @@ billRoute.get('/getBillById/:id', (req, res) => {
         .makeApiCall({ url: `${url}v3/company/${realmId}/bill/${req.params.id}`
         })
       .then((authResponse) => {
+        console.log(authResponse)
         console.log(`The response for API call is :${JSON.stringify(authResponse)}`);
-        res.send(JSON.parse(authResponse.text()));
+        res.send({data : JSON.parse(authResponse.text())});
       })
       .catch((e) => {
         console.error(e.authResponse.response);
         res.status(e.authResponse.response.status).json(e.authResponse.response.body)
       });
     }else{
-      res.send({status: 401, message: 'please login'});
+        res.send({status:false, errorMessage:'please login again'});
     }
 })
 
@@ -115,6 +117,7 @@ function checkToken(){
           })
           .catch((e) => {
             console.error('The error message is :' + e.originalMessage);
+            console.error(e.intuit_tid);
             return false;
           });
       }
