@@ -13,8 +13,6 @@ var LocalStorage = require('node-localstorage').LocalStorage;
     redirectUri: config.redirectUri +'/getToken',     // enter the redirectUri
     logging: true    // by default the value is `false`
   });
-
-
   customerRoute.get('/getCustomerByQuery', (req, res) => {
     const token = JSON.parse(localStorage.getItem('oauthToken'));
     oauthClient.setToken(token);
