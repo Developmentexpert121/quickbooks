@@ -30,13 +30,14 @@ var LocalStorage = require('node-localstorage').LocalStorage;
         })
       .then(function (authResponse) {
         console.log(`The response for API call is :${JSON.stringify(authResponse)}`);
-        res.send({data : JSON.parse(authResponse.text())});
+        res.send(JSON.parse(authResponse.text()));
       })
       .catch(function (e) {
         console.error(e);
+        res.status(e.authResponse.response.status).json(e.authResponse.response.body)
       });
     }else{
-        res.send('please login again');
+      res.send({status: 401, message: 'please login'});
     }
 })
 
@@ -56,47 +57,16 @@ vendorRoute.get('/getVendorById/:id', (req, res) => {
         })
       .then((authResponse) => {
         console.log(`The response for API call is :${JSON.stringify(authResponse)}`);
-        res.send({data : JSON.parse(authResponse.text())});
+        res.send(JSON.parse(authResponse.text()));
       })
       .catch((e) => {
         console.error(e.authResponse.response);
         res.status(e.authResponse.response.status).json(e.authResponse.response.body)
       });
     }else{
-        res.send({status:false, errorMessage:'please login again'});
+      res.send({status: 401, message: 'please login'});
     }
 })
-
-vendorRoute.post('/fullUpdateVendor', (req, res) => {
-    const token = JSON.parse(localStorage.getItem('oauthToken'));
-    oauthClient.setToken(token);
-    let isValid= checkToken()
-    if(isValid){
-        const realmId = oauthClient.getToken().realmId;
-        const url =
-        oauthClient.environment == 'sandbox'
-        ? OAuthClient.environment.sandbox
-        : OAuthClient.environment.production; 
-
-        oauthClient
-            .makeApiCall({ url: `${url}v3/company/${realmId}/vendor`,
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(req.body)
-        })
-        .then(function (authResponse) {
-            console.log(`The response for API call is :${JSON.stringify(authResponse)}`);
-            res.send({data : JSON.parse(authResponse.text())});
-        })
-        .catch(function (e) {
-            console.error(e);
-            res.send(e);
-        });
-    }
-})
-
 
   function checkToken(){
     if (oauthClient.isAccessTokenValid()) {
