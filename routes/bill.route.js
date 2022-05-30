@@ -61,6 +61,7 @@ billRoute.get('/getBillByQuery', async (req, res) => {
     }
 })
 
+
 billRoute.get('/getBillById/:id', async (req, res) => {
     const token = JSON.parse(localStorage.getItem('oauthToken'));
     oauthClient.setToken(token);
