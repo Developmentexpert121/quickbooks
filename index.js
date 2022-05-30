@@ -15,6 +15,7 @@ const invoiceRouter = require('./routes/invoice.route');
 const billRouter = require('./routes/bill.route');
 const vendorRouter = require('./routes/vendor.route');
 const customerRouter = require('./routes/customer.route');
+const itemRouter = require('./routes/item.route');
 
 app.set('port', port)
 app.set('views', 'views');
@@ -27,6 +28,7 @@ app.use('/invoice', invoiceRouter);
 app.use('/bill', billRouter);
 app.use('/vendor', vendorRouter);
 app.use('/customer', customerRouter);
+app.use('/item', itemRouter);
 
 var oauthClient = new OAuthClient({
   clientId: config.consumerKey,    // enter the apps `clientId`
@@ -47,24 +49,22 @@ app.get('/authUri', function(req, res) {
     scope: [OAuthClient.scopes.Accounting, OAuthClient.scopes.OpenId],
     state: 'testState',
   });
-  res.status(200).send({status: 200, body: { link: authUri}})
+  res.status(200).json({ link: authUri})
 })
 
 
 //-----------------------Get Token--------------------------//
-app.get('/getToken', function(req, res) {
-    oauthClient
-        .createToken(req.url)
-        .then(function (authResponse) {
-            console.log('The Token is  ' + authResponse.getToken().access_token);
-            token = authResponse.getToken();
-            localStorage.setItem('oauthToken', JSON.stringify(token));
-            res.send({statusCode:200, status: 'success', data:authResponse});
-        })
-        .catch(function (e) {
-            console.error('The error message is :' + e);
-            res.status(e.authResponse.response.status).json(e.authResponse.response.body)
-        });
+app.get('/getToken', async function(req, res) { 
+  try{
+    const response = await oauthClient.createToken(req.url)
+      if(response.getToken()){
+        token = response.getToken();
+        localStorage.setItem('oauthToken', JSON.stringify(token));
+        res.status(200).json({ status: 'success', data:response});
+    }
+  }catch(e){
+    res.status(e.authResponse.response.status).json(e.authResponse.response.body)
+  }
 })
 
 app.listen(4200, () => {

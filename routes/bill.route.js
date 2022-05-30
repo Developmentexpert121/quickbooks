@@ -15,100 +15,82 @@ var oauthClient = new OAuthClient({
   });
 
 
-  billRoute.post('/createBill', (req, res) => {
+  billRoute.post('/createBill', async (req, res) => {
     const token = JSON.parse(localStorage.getItem('oauthToken'));
     oauthClient.setToken(token);
     let isValid= checkToken()
     if(isValid){
-        const realmId = oauthClient.getToken().realmId;
-        const url =
-        oauthClient.environment == 'sandbox'
-        ? OAuthClient.environment.sandbox
-        : OAuthClient.environment.production; 
-
-    oauthClient
-        .makeApiCall({ url: `${url}v3/company/${realmId}/bill`,
+      try{
+        const response = await oauthClient.makeApiCall({ url: `${url}v3/company/${realmId}/bill`,
         method: 'POST',
         headers: {
         'Content-Type': 'application/json',
         },
         body: JSON.stringify(req.body)
-    })
-    .then(function (authResponse) {
-        console.log(authResponse);
-        console.log(`The response for API call is :${JSON.stringify(authResponse)}`);
-        res.send({status: 200, data :JSON.parse(authResponse.text())});
-    })
-    .catch(function (e) {
-        console.error(e);
+      })
+        res.status(response.response.status).json({ data :JSON.parse(response.text()) });
+      }catch(e){
         res.status(e.authResponse.response.status).json(e.authResponse.response.body)
-    });
+      }
+    }else{
+      res.status(401).json({errorMessage: 'Unauthenticate'});
     }
 })
 
-billRoute.get('/getBillByQuery', (req, res) => {
+billRoute.get('/getBillByQuery', async (req, res) => {
     const token = JSON.parse(localStorage.getItem('oauthToken'));
     oauthClient.setToken(token);
     let isValid= checkToken()
     if(isValid){
+      try{
         const realmId = oauthClient.getToken().realmId;
-        console.log(realmId);
         const url =
         oauthClient.environment == 'sandbox'
             ? OAuthClient.environment.sandbox
             : OAuthClient.environment.production;
     
-        oauthClient
+        const response = await oauthClient
         .makeApiCall({ url: `${url}v3/company/${realmId}/query?query=select * from bill`
         })
-      .then(function (authResponse) {
-        console.log(`The response for API call is :${JSON.stringify(authResponse)}`);
-        res.send({data : JSON.parse(authResponse.text())});
-      })
-      .catch(function (e) {
-        console.error(e);
+        res.status(response.response.status).json({ data :JSON.parse(response.text()) });
+      }catch(e){
         res.status(e.authResponse.response.status).json(e.authResponse.response.body)
-      });
+      }
     }else{
-        res.send('please login again');
+        res.status(401).json({errorMessage: 'Unauthenticate'});
     }
 })
 
-billRoute.get('/getBillById/:id', (req, res) => {
+billRoute.get('/getBillById/:id', async (req, res) => {
     const token = JSON.parse(localStorage.getItem('oauthToken'));
     oauthClient.setToken(token);
     let isValid= checkToken()
     if(isValid){
+      try{
         const realmId = oauthClient.getToken().realmId;
-        console.log(realmId);
         const url =
         oauthClient.environment == 'sandbox'
             ? OAuthClient.environment.sandbox
             : OAuthClient.environment.production;
     
-        oauthClient
+        const response = await oauthClient
         .makeApiCall({ url: `${url}v3/company/${realmId}/bill/${req.params.id}`
         })
-      .then((authResponse) => {
-        console.log(authResponse)
-        console.log(`The response for API call is :${JSON.stringify(authResponse)}`);
-        res.send({data : JSON.parse(authResponse.text())});
-      })
-      .catch((e) => {
-        console.error(e.authResponse.response);
+        res.status(response.response.status).json({ data :JSON.parse(response.text()) });
+      }catch(e){
         res.status(e.authResponse.response.status).json(e.authResponse.response.body)
-      });
+      }
     }else{
-        res.send({status:false, errorMessage:'please login again'});
+      res.status(401).json({errorMessage: 'Unauthenticate'});
     }
 })
 
-function checkToken(){
+async function checkToken(){
     if (oauthClient.isAccessTokenValid()) {
         return true;
       }
       if (!oauthClient.isAccessTokenValid()) {
-        oauthClient
+        await oauthClient
           .refresh()
           .then((authResponse) => {
             const token = authResponse.getToken();
