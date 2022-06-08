@@ -14,7 +14,7 @@ var oauthClient = new OAuthClient({
     logging: true    // by default the value is `false`
   });
 
-
+//----------------------- Create Bill --------------------------//
   billRoute.post('/createBill', async (req, res) => {
     const token = JSON.parse(localStorage.getItem('oauthToken'));
     oauthClient.setToken(token);
@@ -37,6 +37,7 @@ var oauthClient = new OAuthClient({
     }
 })
 
+//----------------------- Get all Bill list using Query  --------------------------//
 billRoute.get('/getBillByQuery', async (req, res) => {
     const token = JSON.parse(localStorage.getItem('oauthToken'));
     oauthClient.setToken(token);
@@ -61,7 +62,7 @@ billRoute.get('/getBillByQuery', async (req, res) => {
     }
 })
 
-
+//----------------------- Get Bill data by Id --------------------------//
 billRoute.get('/getBillById/:id', async (req, res) => {
     const token = JSON.parse(localStorage.getItem('oauthToken'));
     oauthClient.setToken(token);
@@ -86,6 +87,7 @@ billRoute.get('/getBillById/:id', async (req, res) => {
     }
 })
 
+//----------------------- token checking --------------------------//
 async function checkToken(){
     if (oauthClient.isAccessTokenValid()) {
         return true;

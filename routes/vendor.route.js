@@ -14,6 +14,7 @@ var LocalStorage = require('node-localstorage').LocalStorage;
     logging: true    // by default the value is `false`
   });
 
+//----------------------- Get vendor using Query API --------------------------//
   vendorRoute.get('/getVendorByQuery', async (req, res) => {
     const token = JSON.parse(localStorage.getItem('oauthToken'));
     oauthClient.setToken(token);
@@ -38,6 +39,7 @@ var LocalStorage = require('node-localstorage').LocalStorage;
     }
 })
 
+//----------------------- Get vendor by Id --------------------------//
 vendorRoute.get('/getVendorById/:id', async (req, res) => {
     const token = JSON.parse(localStorage.getItem('oauthToken'));
     oauthClient.setToken(token);
@@ -62,7 +64,7 @@ vendorRoute.get('/getVendorById/:id', async (req, res) => {
     }
 })
 
-
+  //----------------------- Token checking --------------------------//
 async function checkToken(){
     if (oauthClient.isAccessTokenValid()) {
         return true;

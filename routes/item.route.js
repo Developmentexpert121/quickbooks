@@ -14,6 +14,7 @@ var oauthClient = new OAuthClient({
     logging: true    // by default the value is `false`
   });
 
+  //----------------------- Get Item by Query API --------------------------//
   itemRoute.get('/getItemByQuery', async (req, res) => {
     const token = JSON.parse(localStorage.getItem('oauthToken'));
     oauthClient.setToken(token);
@@ -38,6 +39,7 @@ var oauthClient = new OAuthClient({
     }
 })
 
+//----------------------- Token checking --------------------------//
 async function checkToken(){
     if (oauthClient.isAccessTokenValid()) {
         return true;

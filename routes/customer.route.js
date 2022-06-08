@@ -13,6 +13,8 @@ var LocalStorage = require('node-localstorage').LocalStorage;
     redirectUri: config.redirectUri +'/getToken',     // enter the redirectUri
     logging: true    // by default the value is `false`
   });
+
+  //----------------------- Get Customer list using Query --------------------------//
   customerRoute.get('/getCustomerByQuery', async (req, res) => {
     const token = JSON.parse(localStorage.getItem('oauthToken'));
     oauthClient.setToken(token);
@@ -37,6 +39,7 @@ var LocalStorage = require('node-localstorage').LocalStorage;
     }
 })
 
+  //----------------------- Get Customer data by Id --------------------------//
 customerRoute.get('/getCustomerById/:id', async (req, res) => {
     const token = JSON.parse(localStorage.getItem('oauthToken'));
     oauthClient.setToken(token);
@@ -61,7 +64,7 @@ customerRoute.get('/getCustomerById/:id', async (req, res) => {
     }
 })
 
-
+  //----------------------- Token checking --------------------------//
 async function checkToken(){
     if (oauthClient.isAccessTokenValid()) {
         return true;

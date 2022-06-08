@@ -14,7 +14,7 @@ var oauthClient = new OAuthClient({
     logging: true    // by default the value is `false`
   });
 
-
+  //----------------------- Create invoice --------------------------//
 invoiceRoute.post('/createInvoice', async (req, res) => {
     const token = JSON.parse(localStorage.getItem('oauthToken'));
     oauthClient.setToken(token);
@@ -43,6 +43,7 @@ invoiceRoute.post('/createInvoice', async (req, res) => {
     }
 })
 
+  //----------------------- Get invoice list by query --------------------------//
 invoiceRoute.get('/getInvoiceByQuery', async (req, res) => {
     const token = JSON.parse(localStorage.getItem('oauthToken'));
     oauthClient.setToken(token);
@@ -67,6 +68,7 @@ invoiceRoute.get('/getInvoiceByQuery', async (req, res) => {
     }
 })
 
+  //----------------------- Get invoice by Id --------------------------//
 invoiceRoute.get('/getInvoiceById/:id', async (req, res) => {
     const token = JSON.parse(localStorage.getItem('oauthToken'));
     oauthClient.setToken(token);
@@ -91,6 +93,7 @@ invoiceRoute.get('/getInvoiceById/:id', async (req, res) => {
     }
 })
 
+  //----------------------- Token checking --------------------------//
 async function checkToken(){
     if (oauthClient.isAccessTokenValid()) {
         return true;
