@@ -6,16 +6,24 @@ const config = require('../config');
 var LocalStorage = require('node-localstorage').LocalStorage;
   localStorage = new LocalStorage('./scratch');
 
-var oauthClient = new OAuthClient({
-    clientId: config.consumerKey,    // enter the apps `clientId`
-    clientSecret: config.consumerSecret,    // enter the apps `clientSecret`
-    environment: config.environment,   // enter either `sandbox` or `production`
-    redirectUri: config.redirectUri +'/getToken',     // enter the redirectUri
-    logging: true    // by default the value is `false`
-  });
+// var oauthClient = new OAuthClient({
+//     clientId: config.consumerKey,    // enter the apps `clientId`
+//     clientSecret: config.consumerSecret,    // enter the apps `clientSecret`
+//     environment: config.environment,   // enter either `sandbox` or `production`
+//     redirectUri: config.redirectUri +'/getToken',     // enter the redirectUri
+//     logging: true    // by default the value is `false`
+//   });
 
 //----------------------- Create Bill --------------------------//
   billRoute.post('/createBill', async (req, res) => {
+    const user = localStorage.getItem('user');
+    var oauthClient = new OAuthClient({
+          clientId: user.consumerKey,    // enter the apps `clientId`
+          clientSecret: user.consumerSecret,    // enter the apps `clientSecret`
+          environment: config.environment,   // enter either `sandbox` or `production`
+          redirectUri: user.redirectUri +'/getToken',     // enter the redirectUri
+          logging: true    // by default the value is `false`
+        });
     const token = JSON.parse(localStorage.getItem('oauthToken'));
     oauthClient.setToken(token);
     let isValid= checkToken()
@@ -30,6 +38,7 @@ var oauthClient = new OAuthClient({
       })
         res.status(response.response.status).json({ data :JSON.parse(response.text()) });
       }catch(e){
+        console.log()
         res.status(e.authResponse.response.status).json(e.authResponse.response.body)
       }
     }else{
@@ -39,6 +48,14 @@ var oauthClient = new OAuthClient({
 
 //----------------------- Get all Bill list using Query  --------------------------//
 billRoute.get('/getBillByQuery', async (req, res) => {
+  const user = localStorage.getItem('user');
+    var oauthClient = new OAuthClient({
+          clientId: user.consumerKey,    // enter the apps `clientId`
+          clientSecret: user.consumerSecret,    // enter the apps `clientSecret`
+          environment: config.environment,   // enter either `sandbox` or `production`
+          redirectUri: user.redirectUri +'/getToken',     // enter the redirectUri
+          logging: true    // by default the value is `false`
+        });
     const token = JSON.parse(localStorage.getItem('oauthToken'));
     oauthClient.setToken(token);
     let isValid= checkToken()
@@ -64,6 +81,14 @@ billRoute.get('/getBillByQuery', async (req, res) => {
 
 //----------------------- Get Bill data by Id --------------------------//
 billRoute.get('/getBillById/:id', async (req, res) => {
+  const user = localStorage.getItem('user');
+    var oauthClient = new OAuthClient({
+          clientId: user.consumerKey,    // enter the apps `clientId`
+          clientSecret: user.consumerSecret,    // enter the apps `clientSecret`
+          environment: config.environment,   // enter either `sandbox` or `production`
+          redirectUri: user.redirectUri +'/getToken',     // enter the redirectUri
+          logging: true    // by default the value is `false`
+        });
     const token = JSON.parse(localStorage.getItem('oauthToken'));
     oauthClient.setToken(token);
     let isValid= checkToken()

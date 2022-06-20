@@ -6,16 +6,24 @@ const config = require('../config');
 var LocalStorage = require('node-localstorage').LocalStorage;
   localStorage = new LocalStorage('./scratch');
 
-  var oauthClient = new OAuthClient({
-    clientId: config.consumerKey,    // enter the apps `clientId`
-    clientSecret: config.consumerSecret,    // enter the apps `clientSecret`
-    environment: config.environment,   // enter either `sandbox` or `production`
-    redirectUri: config.redirectUri +'/getToken',     // enter the redirectUri
-    logging: true    // by default the value is `false`
-  });
+  // var oauthClient = new OAuthClient({
+  //   clientId: config.consumerKey,    // enter the apps `clientId`
+  //   clientSecret: config.consumerSecret,    // enter the apps `clientSecret`
+  //   environment: config.environment,   // enter either `sandbox` or `production`
+  //   redirectUri: config.redirectUri +'/getToken',     // enter the redirectUri
+  //   logging: true    // by default the value is `false`
+  // });
 
   //----------------------- Get Customer list using Query --------------------------//
   customerRoute.get('/getCustomerByQuery', async (req, res) => {
+    const user = localStorage.getItem('user')
+  var oauthClient = new OAuthClient({
+    clientId: user.consumerKey,    // enter the apps `clientId`
+    clientSecret: user.consumerSecret,    // enter the apps `clientSecret`
+    environment: config.environment,   // enter either `sandbox` or `production`
+    redirectUri: user.redirectUri +'/getToken',     // enter the redirectUri
+    logging: true    // by default the value is `false`
+  });
     const token = JSON.parse(localStorage.getItem('oauthToken'));
     oauthClient.setToken(token);
     let isValid= checkToken()
@@ -28,7 +36,7 @@ var LocalStorage = require('node-localstorage').LocalStorage;
             : OAuthClient.environment.production;
     
         const response = await oauthClient
-        .makeApiCall({ url: `${url}v3/company/${realmId}/query?query=select * from Customer WHERE job = true`
+        .makeApiCall({ url: `${url}v3/company/${realmId}/query?query=select * from Customer`
         })
         res.status(response.response.status).json({ data :JSON.parse(response.text()).QueryResponse });
       }catch(e){
@@ -41,6 +49,14 @@ var LocalStorage = require('node-localstorage').LocalStorage;
 
   //----------------------- Get Customer data by Id --------------------------//
 customerRoute.get('/getCustomerById/:id', async (req, res) => {
+  const user = localStorage.getItem('user')
+  var oauthClient = new OAuthClient({
+    clientId: user.consumerKey,    // enter the apps `clientId`
+    clientSecret: user.consumerSecret,    // enter the apps `clientSecret`
+    environment: config.environment,   // enter either `sandbox` or `production`
+    redirectUri: user.redirectUri +'/getToken',     // enter the redirectUri
+    logging: true    // by default the value is `false`
+  });
     const token = JSON.parse(localStorage.getItem('oauthToken'));
     oauthClient.setToken(token);
     let isValid= checkToken()
@@ -66,7 +82,15 @@ customerRoute.get('/getCustomerById/:id', async (req, res) => {
 
 //  ------------------ get multiple Jobs ------------------ 
 
-customerRoute.get('/getJobs/:id', async (req, res) => {
+customerRoute.get('/getJobs', async (req, res) => {
+  const user = localStorage.getItem('user')
+  var oauthClient = new OAuthClient({
+    clientId: user.consumerKey,    // enter the apps `clientId`
+    clientSecret: user.consumerSecret,    // enter the apps `clientSecret`
+    environment: config.environment,   // enter either `sandbox` or `production`
+    redirectUri: user.redirectUri +'/getToken',     // enter the redirectUri
+    logging: true    // by default the value is `false`
+  });
   const token = JSON.parse(localStorage.getItem('oauthToken'));
   console.log('--------------------------------');
   oauthClient.setToken(token);
@@ -115,6 +139,14 @@ customerRoute.get('/getJobs/:id', async (req, res) => {
 
 // ----------------------create customer and job ---------------------
 customerRoute.post('/createCustomer', async (req, res) => {
+  const user = localStorage.getItem('user')
+  var oauthClient = new OAuthClient({
+    clientId: user.consumerKey,    // enter the apps `clientId`
+    clientSecret: user.consumerSecret,    // enter the apps `clientSecret`
+    environment: config.environment,   // enter either `sandbox` or `production`
+    redirectUri: user.redirectUri +'/getToken',     // enter the redirectUri
+    logging: true    // by default the value is `false`
+  });
   const token = JSON.parse(localStorage.getItem('oauthToken'));
   oauthClient.setToken(token);
   let isValid= checkToken()

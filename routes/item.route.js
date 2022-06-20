@@ -16,6 +16,14 @@ var oauthClient = new OAuthClient({
 
   //----------------------- Get Item by Query API --------------------------//
   itemRoute.get('/getItemByQuery', async (req, res) => {
+    const user = localStorage.getItem('user')
+  var oauthClient = new OAuthClient({
+    clientId: user.consumerKey,    // enter the apps `clientId`
+    clientSecret: user.consumerSecret,    // enter the apps `clientSecret`
+    environment: config.environment,   // enter either `sandbox` or `production`
+    redirectUri: user.redirectUri +'/getToken',     // enter the redirectUri
+    logging: true    // by default the value is `false`
+  });
     const token = JSON.parse(localStorage.getItem('oauthToken'));
     oauthClient.setToken(token);
     let isValid= checkToken()
@@ -37,6 +45,44 @@ var oauthClient = new OAuthClient({
     }else{
       res.status(401).json({errorMessage: 'Unauthenticate'});
     }
+})
+
+// ------------------ Get Item Query By Bill ------------------
+itemRoute.get('/getBillItem', async (req, res) => {
+  const user = localStorage.getItem('user')
+  var oauthClient = new OAuthClient({
+    clientId: user.consumerKey,    // enter the apps `clientId`
+    clientSecret: user.consumerSecret,    // enter the apps `clientSecret`
+    environment: config.environment,   // enter either `sandbox` or `production`
+    redirectUri: user.redirectUri +'/getToken',     // enter the redirectUri
+    logging: true    // by default the value is `false`
+  });
+  const token = JSON.parse(localStorage.getItem('oauthToken'));
+  oauthClient.setToken(token);
+  let isValid= checkToken()
+  if(isValid){
+    try{
+      const realmId = oauthClient.getToken().realmId;
+      const url =
+      oauthClient.environment == 'sandbox'
+          ? OAuthClient.environment.sandbox
+          : OAuthClient.environment.production;
+  
+      const response = await oauthClient
+      .makeApiCall({ url: `${url}v3/company/${realmId}/query?query=select * from Item`
+      })
+      const data = JSON.parse(response.text()).QueryResponse.Item;
+      let billItem = []
+      data.forEach( el => {
+        if(el.PurchaseCost > 0) billItem.push(el)
+      })
+      res.status(response.response.status).json({ data :JSON.parse(response.text()).QueryResponse });
+    }catch(e){
+      res.status(e.authResponse.response.status).json(e.authResponse.response.body)
+    }
+  }else{
+    res.status(401).json({errorMessage: 'Unauthenticate'});
+  }
 })
 
 //----------------------- Token checking --------------------------//

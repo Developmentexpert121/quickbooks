@@ -1,21 +1,21 @@
 const express = require('express');
-const vendorRoute = express.Router();
+const termRoute = express.Router();
 var OAuthClient = require('intuit-oauth');
 const config = require('../config');
 
 var LocalStorage = require('node-localstorage').LocalStorage;
   localStorage = new LocalStorage('./scratch');
 
-  // var oauthClient = new OAuthClient({
-  //   clientId: config.consumerKey,    // enter the apps `clientId`
-  //   clientSecret: config.consumerSecret,    // enter the apps `clientSecret`
-  //   environment: config.environment,   // enter either `sandbox` or `production`
-  //   redirectUri: config.redirectUri +'/getToken',     // enter the redirectUri
-  //   logging: true    // by default the value is `false`
-  // });
+// var oauthClient = new OAuthClient({
+//     clientId: config.consumerKey,    // enter the apps `clientId`
+//     clientSecret: config.consumerSecret,    // enter the apps `clientSecret`
+//     environment: config.environment,   // enter either `sandbox` or `production`
+//     redirectUri: config.redirectUri +'/getToken',     // enter the redirectUri
+//     logging: true    // by default the value is `false`
+//   });
 
-//----------------------- Get vendor using Query API --------------------------//
-  vendorRoute.get('/getVendorByQuery', async (req, res) => {
+  //----------------------- Get Item by Query API --------------------------//
+  termRoute.get('/geTermByQuery', async (req, res) => {
     const user = localStorage.getItem('user')
   var oauthClient = new OAuthClient({
     clientId: user.consumerKey,    // enter the apps `clientId`
@@ -36,7 +36,7 @@ var LocalStorage = require('node-localstorage').LocalStorage;
             : OAuthClient.environment.production;
     
         const response = await oauthClient
-        .makeApiCall({ url: `${url}v3/company/${realmId}/query?query=select * from vendor`
+        .makeApiCall({ url: `${url}v3/company/${realmId}/query?query=select * from Term`
         })
         res.status(response.response.status).json({ data :JSON.parse(response.text()).QueryResponse });
       }catch(e){
@@ -47,9 +47,8 @@ var LocalStorage = require('node-localstorage').LocalStorage;
     }
 })
 
-//----------------------- Get vendor by Id --------------------------//
-vendorRoute.get('/getVendorById/:id', async (req, res) => {
-  const user = localStorage.getItem('user')
+termRoute.post('/create', async (req, res) => {
+    const user = localStorage.getItem('user')
   var oauthClient = new OAuthClient({
     clientId: user.consumerKey,    // enter the apps `clientId`
     clientSecret: user.consumerSecret,    // enter the apps `clientSecret`
@@ -68,8 +67,12 @@ vendorRoute.get('/getVendorById/:id', async (req, res) => {
             ? OAuthClient.environment.sandbox
             : OAuthClient.environment.production;
     
-        const response = await oauthClient
-        .makeApiCall({ url: `${url}v3/company/${realmId}/vendor/${req.params.id}`
+        const response = await oauthClient.makeApiCall({ url: `${url}v3/company/${realmId}/invoice`,
+          method: 'POST',
+          headers: {
+          'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(req.body)
         })
         res.status(response.response.status).json({ data :JSON.parse(response.text()) });
       }catch(e){
@@ -80,13 +83,13 @@ vendorRoute.get('/getVendorById/:id', async (req, res) => {
     }
 })
 
-  //----------------------- Token checking --------------------------//
+//----------------------- Token checking --------------------------//
 async function checkToken(){
     if (oauthClient.isAccessTokenValid()) {
         return true;
       }
       if (!oauthClient.isAccessTokenValid()) {
-        await oauthClient
+         await oauthClient
           .refresh()
           .then((authResponse) => {
             const token = authResponse.getToken();
@@ -95,9 +98,10 @@ async function checkToken(){
           })
           .catch((e) => {
             console.error('The error message is :' + e.originalMessage);
+            console.error(e.intuit_tid);
             return false;
           });
       }
 }
 
-module.exports = vendorRoute;
+module.exports = termRoute;
